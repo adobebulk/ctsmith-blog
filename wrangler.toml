@@ -1,0 +1,28 @@
+# Cloudflare Pages project config
+# Used by `npx wrangler pages dev` for local dev and `wrangler pages deploy` for production.
+#
+# Production bindings (R2, secrets) are configured in the Pages project dashboard:
+#   Pages → Settings → Functions → Bindings & Variables
+# The entries below are for local dev only (wrangler pages dev).
+
+name = "ctsmith-blog"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "site/public"
+
+[vars]
+HUGO_VERSION = "0.161.1"
+# Keep in sync with package.json version
+PACKAGE_VERSION = "0.3.0"
+GITHUB_REPO = "adobebulk/ctsmith-blog"
+ASSETS_R2_PUBLIC_URL = "https://r2.blog.ctsmith.org"
+PUBLIC_ORIGIN = "https://blog.ctsmith.org"
+CF_PAGES_PROJECT = "ctsmith-blog"
+# DEPLOY_HOOK_URL is a Pages secret — never a wrangler [vars] entry.
+
+[[r2_buckets]]
+binding = "ASSETS_BUCKET"
+bucket_name = "ctsmith-blog-assets"
+
+[[r2_buckets]]
+binding = "ORIGINALS_BUCKET"
+bucket_name = "ctsmith-blog-originals"

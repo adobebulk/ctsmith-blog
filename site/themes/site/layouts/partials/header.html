@@ -1,0 +1,11 @@
+{{- $s := .Site.Data.settings -}}
+{{- $b := partial "basalt-config.html" . -}}
+{{- $types := $b.contentTypes -}}
+<header class="sticky top-0 z-50 h-14 flex items-center justify-between px-6 bg-rams text-white">
+  <a href="{{ "/" | relURL }}" class="text-sm font-semibold tracking-tight">{{ $s.title | default .Site.Title }}</a>
+  <nav class="flex gap-6 text-sm text-white/80">
+    {{- if $types.posts -}}
+    <a href="{{ "/posts/" | relURL }}" class="hover:text-white transition-colors">{{ $s.navLabel | default "Writing" }}</a>
+    {{- end -}}
+  </nav>
+</header>

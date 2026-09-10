@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Locale }}">
+<head>{{ partial "head.html" . }}</head>
+<body class="min-h-screen flex flex-col bg-stone-50 text-stone-900 font-sans">
+  {{ partial "header.html" . }}
+
+  {{- $s := .Site.Data.settings -}}
+  {{- $b := partial "basalt-config.html" . -}}
+  {{- $types := $b.contentTypes -}}
+  {{- $home := $b.homepage -}}
+  {{- $base := .Site.Params.assetsBaseURL -}}
+
+  <main class="flex-1">
+
+    {{- if eq $home "posts" -}}
+    {{- $postSection := site.GetPage "/posts" -}}
+    <section class="w-full max-w-2xl mx-auto px-6 py-10">
+      <h1 class="text-2xl font-bold tracking-tight">{{ $s.title | default .Site.Title }}</h1>
+      {{- with $s.description -}}
+      <p class="mt-2 text-sm text-stone-500">{{ . }}</p>
+      {{- end -}}
+      <ul class="mt-8 space-y-6">
+        {{- with $postSection -}}
+        {{- range where .Pages "Params.draft" "ne" true -}}
+        <li>
+          <a href="{{ .RelPermalink }}" class="group block">
+            <span class="text-sm font-semibold text-stone-800 group-hover:text-stone-900 transition-colors">{{ .Title }}</span>
+            <span class="ml-3 text-xs text-stone-400 tabular-nums">{{ .Date.Format "2006-01-02" }}</span>
+            {{- with .Params.excerpt }}
+            <p class="mt-1 text-xs text-stone-500 leading-relaxed">{{ . }}</p>
+            {{- end }}
+          </a>
+        </li>
+        {{- end -}}
+        {{- end -}}
+      </ul>
+    </section>
+    {{- else -}}
+
+    {{/* ── Section 1: Hero ── */}}
+    {{- with $s.heroPhotoKey -}}
+    {{- $heroKey := . -}}
+    {{- $heroParts := split $heroKey "/" -}}
+    {{- $heroSeriesSlug := index $heroParts 0 -}}
+    {{- $heroPhotoId := index $heroParts 1 -}}
+    {{- $heroSeries := site.GetPage (printf "/projects/%s" $heroSeriesSlug) -}}
+    {{- $heroPhoto := dict -}}
+    {{- with $heroSeries -}}
+      {{- range .Params.photos -}}
+        {{- if eq .id $heroPhotoId -}}{{- $heroPhoto = . -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $heroPermalink := printf "/projects/%s/%s/" $heroSeriesSlug $heroPhotoId -}}
+    <section class="relative overflow-hidden" style="aspect-ratio:16/9;max-height:80vh;">
+      <a href="{{ $heroPermalink }}" style="position:absolute;inset:0;z-index:1;" aria-label="View photo"></a>
+      <img
+        src="{{ $base }}/{{ $heroKey }}/1200.jpg"
+        srcset="{{ $base }}/{{ $heroKey }}/600.jpg 600w, {{ $base }}/{{ $heroKey }}/1200.jpg 1200w, {{ $base }}/{{ $heroKey }}/2400.jpg 2400w"
+        sizes="100vw"
+        class="w-full h-full object-cover"
+        alt="{{ with $heroPhoto.caption }}{{ . }}{{ else }}Hero photo{{ end }}"
+        loading="eager"
+      >
+      {{- with $heroPhoto.caption -}}
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 50%);pointer-events:none;z-index:2;"></div>
+      <p style="position:absolute;bottom:0;left:0;right:0;padding:1.25rem 1.5rem;color:rgba(255,255,255,.9);font-size:.875rem;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;z-index:3;">{{ . }}</p>
+      {{- end -}}
+    </section>
+    {{- end -}}
+
+    {{/* ── Section 2: Featured row ── */}}
+    {{- if $s.featured -}}
+    {{/* Collect featured post slugs for deduplication in section 4 */}}
+    {{- $featuredPostSlugs := slice -}}
+    {{- range $s.featured -}}
+      {{- if eq .type "post" -}}{{- $featuredPostSlugs = $featuredPostSlugs | append .slug -}}{{- end -}}
+    {{- end -}}
+    <section class="px-6 py-8 border-b border-stone-200">
+      <h2 class="text-xs font-semibold tracking-widest uppercase text-stone-400 mb-4">Featured</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {{- range $s.featured -}}
+          {{- $item := . -}}
+          {{- $label := $item.label -}}
+
+          {{- if eq $item.type "series" -}}
+            {{- $page := site.GetPage (printf "/projects/%s" $item.slug) -}}
+            {{- with $page -}}
+              {{- if not .Params.draft -}}
+                {{- $coverKey := "" -}}
+                {{- $coverID := .Params.cover -}}
+                {{- range .Params.photos -}}
+                  {{- if eq .id $coverID -}}{{- $coverKey = .key -}}{{- end -}}
+                {{- end -}}
+                {{- if and (eq $coverKey "") (gt (len .Params.photos) 0) -}}
+                  {{- $coverKey = (index .Params.photos 0).key -}}
+                {{- end -}}
+                <a href="{{ .RelPermalink }}" class="relative block overflow-hidden rounded-sm bg-stone-200 aspect-[4/3] group">
+                  {{- if ne $coverKey "" -}}
+                  <img src="{{ $base }}/{{ $coverKey }}/600.jpg" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-102" alt="{{ .Title }}" loading="lazy">
+                  {{- end -}}
+                  <div class="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-black/60 to-transparent">
+                    <span class="text-white text-sm font-semibold">{{ if ne $label "" }}{{ $label }}{{ else }}{{ .Title }}{{ end }}</span>
+                    <span class="text-white/60 text-xs mt-0.5">{{ len .Params.photos }} photo{{ if ne (len .Params.photos) 1 }}s{{ end }}</span>
+                  </div>
+                </a>
+              {{- end -}}
+            {{- end -}}
+
+          {{- else if eq $item.type "post" -}}
+            {{- $page := site.GetPage (printf "/posts/%s" $item.slug) -}}
+            {{- with $page -}}
+              {{- if not .Params.draft -}}
+                <a href="{{ .RelPermalink }}" class="block rounded-sm border border-stone-200 p-5 hover:border-stone-400 transition-colors bg-white group">
+                  <span class="text-sm font-semibold text-stone-800 group-hover:text-stone-900 transition-colors block">{{ if ne $label "" }}{{ $label }}{{ else }}{{ .Title }}{{ end }}</span>
+                  <span class="text-xs text-stone-400 tabular-nums mt-1 block">{{ .Date.Format "2006-01-02" }}</span>
+                  {{- with .Params.excerpt -}}
+                  <p class="mt-2 text-xs text-stone-500 leading-relaxed">{{ . }}</p>
+                  {{- end -}}
+                </a>
+              {{- end -}}
+            {{- end -}}
+
+          {{- else if eq $item.type "photo" -}}
+            {{- $seriesPage := site.GetPage (printf "/projects/%s" $item.slug) -}}
+            {{- with $seriesPage -}}
+              {{- if not .Params.draft -}}
+                {{- $photoId := $item.photoId -}}
+                {{- $targetPhoto := false -}}
+                {{- range .Params.photos -}}
+                  {{- if eq .id $photoId -}}{{- $targetPhoto = . -}}{{- end -}}
+                {{- end -}}
+                {{- with $targetPhoto -}}
+                  {{- $photoPermalink := printf "/projects/%s/%s/" $item.slug .id -}}
+                  <a href="{{ $photoPermalink }}" class="relative block overflow-hidden rounded-sm bg-stone-200 aspect-[4/3] group">
+                    <img src="{{ $base }}/{{ .key }}/600.jpg" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-102" alt="{{ with .caption }}{{ . }}{{ else }}Photo{{ end }}" loading="lazy">
+                    <div class="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-black/60 to-transparent">
+                      <span class="text-white text-sm font-semibold">{{ if ne $label "" }}{{ $label }}{{ else }}{{ with .caption }}{{ . }}{{ else }}Photo {{ .id }}{{ end }}{{ end }}</span>
+                      {{- with .body -}}<span class="text-white/60 text-xs mt-0.5">Read →</span>{{- end -}}
+                    </div>
+                  </a>
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+
+          {{- end -}}
+        {{- end -}}
+      </div>
+    </section>
+    {{- end -}}
+
+    {{/* ── Section 3: Series grid ── */}}
+    {{- if $types.series -}}
+    <section class="p-1.5">
+      {{- $projects := where (site.GetPage "/projects").Sections "Params.draft" "ne" true -}}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5">
+        {{- range sort $projects "Date" "desc" -}}
+          {{- $photos := .Params.photos -}}
+          {{- $count := len $photos -}}
+          {{- $coverKey := "" -}}
+          {{- $coverID := .Params.cover -}}
+          {{- range $photos -}}
+            {{- if eq .id $coverID -}}{{- $coverKey = .key -}}{{- end -}}
+          {{- end -}}
+          {{- if and (eq $coverKey "") (gt $count 0) -}}{{- $coverKey = (index $photos 0).key -}}{{- end -}}
+
+          <a href="{{ .RelPermalink }}" class="relative block overflow-hidden rounded-sm bg-stone-200 aspect-[4/3] group">
+            {{- if ne $coverKey "" -}}
+              <div class="project-thumb" style="background-image: url('{{ $base }}/{{ $coverKey }}/600.jpg')"></div>
+            {{- else -}}
+              <div class="w-full h-full bg-stone-200"></div>
+            {{- end -}}
+
+            <div class="absolute inset-0 flex flex-col justify-end p-5
+                        bg-gradient-to-t from-black/60 to-transparent
+                        opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <span class="text-white text-sm font-semibold tracking-tight leading-snug">{{ .Title }}</span>
+              <span class="text-white/60 text-xs mt-0.5">{{ $count }} photo{{ if ne $count 1 }}s{{ end }}</span>
+            </div>
+          </a>
+        {{- end -}}
+      </div>
+    </section>
+    {{- end -}}
+
+    {{/* ── Section 4: Recent posts (deduped from featured) ── */}}
+    {{- $postSection := site.GetPage "/posts" -}}
+    {{- if and $types.posts $postSection -}}
+      {{/* Build set of post slugs already in featured */}}
+      {{- $featPostSlugs := slice -}}
+      {{- range $s.featured -}}
+        {{- if eq .type "post" -}}{{- $featPostSlugs = $featPostSlugs | append .slug -}}{{- end -}}
+      {{- end -}}
+      {{/* Filter published posts not already featured */}}
+      {{- $allPosts := where $postSection.Pages "Params.draft" "ne" true -}}
+      {{- $dedupedPosts := slice -}}
+      {{- range $allPosts -}}
+        {{- if not (in $featPostSlugs .Slug) -}}
+          {{- $dedupedPosts = $dedupedPosts | append . -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $recentPosts := first 3 $dedupedPosts -}}
+      {{- if $recentPosts -}}
+      <section class="px-6 py-8 border-t border-stone-200">
+        <h2 class="text-xs font-semibold tracking-widest uppercase text-stone-400 mb-4">
+          <a href="{{ $postSection.RelPermalink }}" class="hover:text-stone-600 transition-colors">Recent posts</a>
+        </h2>
+        <ul class="space-y-4">
+          {{- range $recentPosts -}}
+          <li>
+            <a href="{{ .RelPermalink }}" class="group flex items-baseline gap-3">
+              <span class="text-sm text-stone-700 group-hover:text-stone-900 transition-colors font-medium">{{ .Title }}</span>
+              <span class="text-xs text-stone-400 tabular-nums whitespace-nowrap">{{ .Date.Format "2006-01-02" }}</span>
+              {{- with .Params.excerpt -}}
+              <span class="text-xs text-stone-500 hidden sm:inline truncate">{{ . }}</span>
+              {{- end -}}
+            </a>
+          </li>
+          {{- end -}}
+        </ul>
+      </section>
+      {{- end -}}
+    {{- end -}}
+
+    {{- end -}}{{/* end gallery homepage */}}
+
+  </main>
+
+  {{ partial "footer.html" . }}
+</body>
+</html>

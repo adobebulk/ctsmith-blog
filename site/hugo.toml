@@ -1,0 +1,13 @@
+baseURL = "https://blog.ctsmith.org/"
+locale = "en-us"
+title = "C.T. Smith"
+theme = ["site", "basalt"]
+disableKinds = ["taxonomy", "term", "RSS"]
+
+[params]
+  photographer = "C.T. Smith"
+  description   = "Writing"
+  assetsBaseURL = "/assets"
+
+[build]
+  writeStats = true
