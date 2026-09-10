@@ -2,6 +2,6 @@ contentTypes:
   series: false
   pool: false
   posts: true
-  pages: false
+  pages: true
 homepage: posts
-nav: default
+nav: configurable

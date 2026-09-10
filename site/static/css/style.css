@@ -1204,6 +1204,29 @@ img {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.splash-name {
+  display: inline-block;
+  margin: 0 20px 0 0;
+  padding-right: 23px;
+  font-size: 24px;
+  font-weight: 500;
+  vertical-align: top;
+  line-height: 49px;
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.splash-tagline {
+  display: inline-block;
+  text-align: left;
+}
+
+.splash-tagline h2 {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 49px;
+  margin: 0;
+}
+
 .pointer-events-none {
   pointer-events: none;
 }
@@ -1260,6 +1283,10 @@ img {
 
 .mt-1 {
   margin-top: 0.25rem;
+}
+
+.mt-12 {
+  margin-top: 3rem;
 }
 
 .mt-2 {
@@ -1565,6 +1592,10 @@ img {
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
+}
+
+.text-left {
+  text-align: left;
 }
 
 .text-center {
