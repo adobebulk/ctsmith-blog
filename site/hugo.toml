@@ -9,5 +9,8 @@ disableKinds = ["taxonomy", "term", "RSS"]
   description   = "Writing"
   assetsBaseURL = "/assets"
 
+[permalinks]
+  pages = "/:slug/"
+
 [build]
   writeStats = true

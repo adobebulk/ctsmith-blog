@@ -1,6 +1,6 @@
 # ctsmith-blog
 
-Basalt **instance** for writing. Engine is [adobebulk/basalt](https://github.com/adobebulk/basalt) v0.3.0. This repo holds instance config, content, and a template overlay — not a fork of Functions or admin.
+Basalt **instance** for writing. Engine is [adobebulk/basalt](https://github.com/adobebulk/basalt) v0.4.0. This repo holds instance config, content, and a template overlay — not a fork of Functions or admin.
 
 - Public: `https://blog.ctsmith.org/` (once DNS / Pages domain is attached)
 - Admin: `/admin` (Cloudflare Access)
