@@ -14,9 +14,10 @@ Do not reuse photos or ctsmith.org R2 buckets, tokens, or deploy hooks.
 
 ```bash
 npm install
-cp .dev.vars.example .dev.vars   # add a GITHUB_TOKEN to save from admin
 npm run dev
 ```
+
+`npm run dev` copies `.dev.vars.example` → `.dev.vars` if that file is missing. Add a real `GITHUB_TOKEN` there to save from admin.
 
 [http://localhost:1313](http://localhost:1313) and [http://localhost:1313/admin](http://localhost:1313/admin). That `dev` script serves Hugo output **and** `/api` (Wrangler) on 1313. Stop the old Hugo-only process first so the port is free.
 

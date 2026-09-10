@@ -8,7 +8,8 @@
     "hugo:dev": "hugo server --source site --config hugo.toml --disableFastRender",
     "hugo:watch": "hugo --source site --config hugo.toml --watch",
     "functions:dev": "wrangler pages dev site/public --port 1313 --ip 127.0.0.1 --r2 ASSETS_BUCKET=ctsmith-blog-assets --r2 ORIGINALS_BUCKET=ctsmith-blog-originals",
-    "dev": "node scripts/write-version.js && npm run css:build && hugo --source site --config hugo.toml && concurrently \"npm run css:watch\" \"npm run hugo:watch\" \"npm run functions:dev\"",
+    "dev:vars": "node -e \"const fs=require('fs'); if(!fs.existsSync('.dev.vars')){fs.copyFileSync('.dev.vars.example','.dev.vars'); console.log('created .dev.vars from example');} else { console.log('.dev.vars already present'); }\"",
+    "dev": "npm run dev:vars && node scripts/write-version.js && npm run css:build && hugo --source site --config hugo.toml && concurrently \"npm run css:watch\" \"npm run hugo:watch\" \"npm run functions:dev\"",
     "build": "node scripts/write-version.js && tailwindcss -i site/assets/css/input.css -o site/static/css/style.css --minify && hugo --source site --config hugo.toml --minify"
   },
   "devDependencies": {
