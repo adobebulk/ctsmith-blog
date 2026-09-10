@@ -12,12 +12,22 @@ Do not reuse photos or ctsmith.org R2 buckets, tokens, or deploy hooks.
 
 ## Local
 
+Public site (Hugo only — no `/api`):
+
 ```bash
 npm install
 npm run dev
 ```
 
-Hugo at [http://localhost:1313](http://localhost:1313). Admin/API need wrangler + `.dev.vars`.
+[http://localhost:1313](http://localhost:1313)
+
+Admin/settings need Pages Functions. Copy `.dev.vars.example` → `.dev.vars` and put a real `GITHUB_TOKEN` (Contents read/write on this repo). Then:
+
+```bash
+npm run admin:dev
+```
+
+Open the wrangler URL (usually [http://localhost:8788/admin](http://localhost:8788/admin)), not `:1313/admin`. Without wrangler, Settings will toast “Failed to load settings” because `/api/settings` does not exist.
 
 ## Cloudflare (you)
 
