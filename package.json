@@ -6,14 +6,16 @@
     "css:build": "tailwindcss -i site/assets/css/input.css -o site/static/css/style.css --minify",
     "css:watch": "tailwindcss -i site/assets/css/input.css -o site/static/css/style.css --watch",
     "hugo:dev": "hugo server --source site --config hugo.toml --disableFastRender",
-    "dev": "node scripts/write-version.js && concurrently \"npm run css:watch\" \"npm run hugo:dev\"",
-    "build": "node scripts/write-version.js && tailwindcss -i site/assets/css/input.css -o site/static/css/style.css --minify && hugo --source site --config hugo.toml --minify",
-    "admin:dev": "npm run build && wrangler pages dev site/public --r2 ASSETS_BUCKET=ctsmith-blog-assets --r2 ORIGINALS_BUCKET=ctsmith-blog-originals"
+    "hugo:watch": "hugo --source site --config hugo.toml --watch",
+    "functions:dev": "wrangler pages dev site/public --port 1313 --ip 127.0.0.1 --r2 ASSETS_BUCKET=ctsmith-blog-assets --r2 ORIGINALS_BUCKET=ctsmith-blog-originals",
+    "dev": "node scripts/write-version.js && npm run css:build && hugo --source site --config hugo.toml && concurrently \"npm run css:watch\" \"npm run hugo:watch\" \"npm run functions:dev\"",
+    "build": "node scripts/write-version.js && tailwindcss -i site/assets/css/input.css -o site/static/css/style.css --minify && hugo --source site --config hugo.toml --minify"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
     "concurrently": "^9.0.0",
-    "tailwindcss": "^3.4.0"
+    "tailwindcss": "^3.4.0",
+    "wrangler": "^4.130.0"
   },
   "dependencies": {
     "js-yaml": "^4.1.1"

@@ -12,22 +12,15 @@ Do not reuse photos or ctsmith.org R2 buckets, tokens, or deploy hooks.
 
 ## Local
 
-Public site (Hugo only — no `/api`):
-
 ```bash
 npm install
+cp .dev.vars.example .dev.vars   # add a GITHUB_TOKEN to save from admin
 npm run dev
 ```
 
-[http://localhost:1313](http://localhost:1313)
+[http://localhost:1313](http://localhost:1313) and [http://localhost:1313/admin](http://localhost:1313/admin). That `dev` script serves Hugo output **and** `/api` (Wrangler) on 1313. Stop the old Hugo-only process first so the port is free.
 
-Admin/settings need Pages Functions. Copy `.dev.vars.example` → `.dev.vars` and put a real `GITHUB_TOKEN` (Contents read/write on this repo). Then:
-
-```bash
-npm run admin:dev
-```
-
-Open the wrangler URL (usually [http://localhost:8788/admin](http://localhost:8788/admin)), not `:1313/admin`. Without wrangler, Settings will toast “Failed to load settings” because `/api/settings` does not exist.
+`npm run hugo:dev` is Hugo only (no admin API).
 
 ## Cloudflare (you)
 
